@@ -1,9 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Otsikko from './Otsikko';
-import Sisalto from './Sisalto';
-import Yhteensa from './Yhteensa';
+const Otsikko = props => {
+  return <h1>{props.kurssi}</h1>;
+};
+
+const Sisalto = props => {
+  const sisalto = props.osat.map(osa => (
+    <Osa osa={osa.nimi} tehtavia={osa.tehtavia} key={osa.nimi} />
+  ));
+
+  return sisalto;
+};
+
+const Yhteensa = props => {
+  return (
+    <p>
+      yhteensä{' '}
+      {props.osat[0].tehtavia + props.osat[1].tehtavia + props.osat[2].tehtavia}{' '}
+      tehtävää
+    </p>
+  );
+};
+
+const Osa = props => {
+  return (
+    <p>
+      {props.osa} {props.tehtavia}
+    </p>
+  );
+};
 
 const App = () => {
   const kurssi = {
