@@ -1,21 +1,25 @@
 import React from 'react';
 import Filter from './components/Filter';
 import Person from './components/Person';
+import personService from './services/Persons';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      persons: [
-        { name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Martti Tienari', number: '040-123456' },
-        { name: 'Arto Järvinen', number: '040-123456' },
-        { name: 'Lea Kutvonen', number: '040-123456' }
-      ],
+      persons: [],
       newName: '',
       newNumber: '',
       filter: ''
     };
+  }
+
+  componentDidMount() {
+    personService
+      .getAll()
+      .then(response => {
+        this.setState({ persons: response })
+      })
   }
 
   handleNewName = event => {
@@ -42,22 +46,56 @@ class App extends React.Component {
   addName = event => {
     event.preventDefault();
     const names = this.state.persons.slice(0);
-    if (
-      names
-        .map(person => {
-          return person.name.toLowerCase();
+    const {newName, newNumber} = this.state;
+    const person = this.findPersonByName(newName);
+    const newPerson = { name: newName, number: newNumber };
+    if (!person) {
+      personService.create(newPerson).
+        then(response => {
+          names.push(response);
+          this.setState({ persons: names });
         })
-        .indexOf(this.state.newName.toLowerCase()) === -1
-    ) {
-      names.push({ name: this.state.newName, number: this.state.newNumber });
-      this.setState({ persons: names });
+    } else {
+      const result = window.confirm(
+        `${person.name} on jo luettelossa, korvataanko vanha numero uudella?`);
+      if(result) {
+        personService.update(person.id, newPerson).
+        then(updatedPerson => {
+          const oldPersons = this.state.persons.filter(oldPerson => oldPerson.id !== person.id);
+          this.setState({
+              persons: oldPersons.concat(updatedPerson)
+          });
+        })
+      }
     }
   };
+
+  deleteHandler = (id, event) => {
+    const person = this.findPerson(id);
+    const result = window.confirm(`poistetaanko ${person.name}`);
+    if(result){
+      event.preventDefault();
+      personService.remove(id).
+        then(this.setState(
+          { persons: this.state.persons.filter((person) => person.id !== id) })
+        );
+    }
+  }
+
+  findPersonByName = (name) => {
+    return this.state.persons.find(
+      person => person.name.toLowerCase() === name.toLowerCase() );
+  }
+
+  findPerson = (id) => {
+    return this.state.persons.find(person => person.id === id );
+  }
 
   render() {
     const persons = this.filteredNames();
     const personList = persons.map(person => (
-      <Person key={person.name} name={person.name} number={person.number} />
+      <Person key={person.id} id={person.id} name={person.name}
+        number={person.number} deleteHandler={this.deleteHandler} />
     ));
     return (
       <div>
