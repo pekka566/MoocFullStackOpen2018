@@ -17,13 +17,10 @@ class Filter extends Component {
   render() {
     const { filter } = this.state;
     return (
-      <div>
-        <h1>Puhelinluettelo</h1>
         <div>
           rajaa näytettäviä{' '}
           <input value={filter} onChange={this.handleFilter} />
         </div>
-      </div>
     );
   }
 }

@@ -3,6 +3,8 @@ import Filter from './components/Filter';
 import Person from './components/Person';
 import personService from './services/Persons';
 
+import './App.css';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -10,7 +12,9 @@ class App extends React.Component {
       persons: [],
       newName: '',
       newNumber: '',
-      filter: ''
+      filter: '',
+      msg: null,
+      error: null
     };
   }
 
@@ -50,21 +54,39 @@ class App extends React.Component {
     const person = this.findPersonByName(newName);
     const newPerson = { name: newName, number: newNumber };
     if (!person) {
-      personService.create(newPerson).
-        then(response => {
+      personService.create(newPerson)
+        .then(response => {
           names.push(response);
-          this.setState({ persons: names });
-        })
+          this.setState({ persons: names,
+            msg: `lisättiin ${response.name}` });
+          setTimeout(() => {
+            this.setState({msg: null})
+          }, 5000);
+        });
     } else {
       const result = window.confirm(
         `${person.name} on jo luettelossa, korvataanko vanha numero uudella?`);
       if(result) {
-        personService.update(person.id, newPerson).
-        then(updatedPerson => {
-          const oldPersons = this.state.persons.filter(oldPerson => oldPerson.id !== person.id);
+        const oldPersons = this.state.persons.filter(oldPerson => oldPerson.id !== person.id);
+        personService.update(person.id, newPerson)
+        .then(updatedPerson => {
           this.setState({
-              persons: oldPersons.concat(updatedPerson)
+              persons: oldPersons.concat(updatedPerson),
+              msg: `muutettiin ${updatedPerson.name}`
           });
+          setTimeout(() => {
+            this.setState({msg: null})
+          }, 5000);
+        })
+        .catch(error => {
+          this.setState({
+            persons: oldPersons,
+            error: `${person.name} oli jo poistettu!`
+          });
+          console.log(error);
+          setTimeout(() => {
+            this.setState({error: null})
+          }, 5000);
         })
       }
     }
@@ -75,10 +97,16 @@ class App extends React.Component {
     const result = window.confirm(`poistetaanko ${person.name}`);
     if(result){
       event.preventDefault();
-      personService.remove(id).
-        then(this.setState(
-          { persons: this.state.persons.filter((person) => person.id !== id) })
-        );
+      personService.remove(id)
+      .then(
+        this.setState(
+          { persons: this.state.persons.filter((person) => person.id !== id),
+            msg: `poistettiin ${person.name}`}
+        ),
+        setTimeout(() => {
+          this.setState({msg: null})
+        }, 5000)
+      );
     }
   }
 
@@ -92,6 +120,17 @@ class App extends React.Component {
   }
 
   render() {
+    const notification = (message, error)  => {
+      const className = error !== null ? "error" : "ok";
+      if (message === null && error === null) {
+        return null
+      }
+      return (
+        <div className={className}>
+          {message} {error}
+        </div>
+      )
+    }
     const persons = this.filteredNames();
     const personList = persons.map(person => (
       <Person key={person.id} id={person.id} name={person.name}
@@ -99,6 +138,8 @@ class App extends React.Component {
     ));
     return (
       <div>
+        <h1>Puhelinluettelo</h1>
+        {notification(this.state.msg, this.state.error)}
         <Filter handleFilter={this.handleFilter} />
         <h2>Lisää uusi</h2>
         <form onSubmit={this.addName}>
