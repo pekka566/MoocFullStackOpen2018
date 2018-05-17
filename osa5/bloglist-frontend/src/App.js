@@ -1,6 +1,8 @@
 import React from 'react';
 import Blog from './components/Blog';
 import CreateBlogForm from './components/CreateBlogForm';
+import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -15,7 +17,9 @@ class App extends React.Component {
       newBlogAuthor: '',
       newBlogTitle: '',
       newBlogUrl: '',
-      notification: ''
+      notification: null,
+      error: null,
+      visible: false
     };
   }
 
@@ -49,9 +53,13 @@ class App extends React.Component {
       newBlogAuthor: '',
       newBlogTitle: '',
       newBlogUrl: '',
-      notification: '"' + blog.title + '" added successfully',
+      notification: "a new blog ' + blog.title + ' by + blog.author + added",
       blogs: this.state.blogs.concat(blog)
     });
+
+    setTimeout(() => {
+      this.setState({ notification: null });
+    }, 5000);
   };
 
   login = async event => {
@@ -67,7 +75,11 @@ class App extends React.Component {
       blogService.setToken(user.token);
       this.setState({ username: '', password: '', user });
     } catch (exception) {
-      // ...
+      console.log(exception);
+      this.setState({ error: 'wrong username or password' });
+      setTimeout(() => {
+        this.setState({ error: null });
+      }, 5000);
     }
   };
 
@@ -79,38 +91,37 @@ class App extends React.Component {
   };
 
   render() {
-    const loginForm = () => (
-      <div>
-        <h2>Log in to application</h2>
+    const loginForm = () => {
+      const hideWhenVisible = {
+        display: this.state.visible ? 'none' : ''
+      };
+      const showWhenVisible = {
+        display: this.state.visible ? '' : 'none'
+      };
 
-        <form onSubmit={this.login}>
-          <div>
-            username:
-            <input
-              type="text"
-              name="username"
-              value={this.state.username}
-              onChange={this.handleInputFieldChange}
+      return (
+        <div>
+          <Togglable
+            buttonLabel="log in"
+            ref={component => (this.loginForm = component)}
+          >
+            <LoginForm
+              visible={this.state.visible}
+              username={this.state.username}
+              password={this.state.password}
+              handleChange={this.handleInputFieldChange}
+              handleSubmit={this.login}
             />
-          </div>
-          <div>
-            password:
-            <input
-              type="password"
-              name="password"
-              value={this.state.password}
-              onChange={this.handleInputFieldChange}
-            />
-          </div>
-          <button>login</button>
-        </form>
-      </div>
-    );
+          </Togglable>
+        </div>
+      );
+    };
 
     const blogs = () => (
       <div>
         <div>
           <h2>blogs</h2>
+          {notifications()}
           <div>
             {this.state.user.username} logged in{' '}
             <button onClick={this.logout}>logout</button>
@@ -130,7 +141,33 @@ class App extends React.Component {
       </div>
     );
 
-    return <div>{this.state.user === null ? loginForm() : blogs()}</div>;
+    const notifications = () => (
+      <div>
+        {this.state.notification !== null && (
+          <p style={{ color: 'green', border: '3px solid green' }}>
+            {this.state.notification}
+          </p>
+        )}
+      </div>
+    );
+
+    const erras = () => (
+      <div>
+        {this.state.error !== null && (
+          <p style={{ color: 'red', border: '3px solid red' }}>
+            {this.state.error}
+          </p>
+        )}
+      </div>
+    );
+
+    return (
+      <div>
+        {erras()}
+
+        {this.state.user === null ? loginForm() : blogs()}
+      </div>
+    );
   }
 }
 
