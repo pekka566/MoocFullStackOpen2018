@@ -9,9 +9,15 @@ const blogStyle = {
   marginBottom: 5
 };
 
-const Blog = ({ blog }) => (
+const Blog = ({ blog, handleLikeButton }) => (
   <div style={blogStyle}>
-    {blog.title} {blog.author}
+    <div>
+      {blog.title} {blog.author}
+    </div>
+    <div>
+      {blog.likes} likes
+      <button onClick={event => handleLikeButton(event, blog)}>like</button>
+    </div>
   </div>
 );
 

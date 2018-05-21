@@ -90,6 +90,54 @@ class App extends React.Component {
     this.setState({ user: null });
   };
 
+  handleLikeBlog = async (event, blog) => {
+    event.preventDefault();
+    console.log(blog);
+    const user = blog.user ? blog.user._id : null;
+    try {
+      const updateBlog = {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        user,
+        likes: blog.likes + 1
+      };
+
+      const updatedBlog = await blogService.update(blog.id, updateBlog);
+      const oldBlogs = this.state.blogs.filter(
+        blog => blog.id !== updateBlog.id
+      );
+
+      this.setState({
+        blogs: oldBlogs.concat(updatedBlog),
+        notification: '"' + blog.title + '" updated successfully'
+      });
+
+      setTimeout(() => {
+        this.setState({ notification: null });
+      }, 5000);
+    } catch (exception) {
+      console.error(exception);
+      this.setState({
+        error: 'Failed to update "' + blog.title + '"'
+      });
+
+      setTimeout(() => {
+        this.setState({ error: null });
+      }, 5000);
+    }
+  };
+
+  sortLikes = (a, b) => {
+    if (a.likes > b.likes) {
+      return -1;
+    }
+    if (a.likes < b.likes) {
+      return 1;
+    }
+    return 0;
+  };
+
   render() {
     const loginForm = () => {
       const hideWhenVisible = {
@@ -126,7 +174,15 @@ class App extends React.Component {
             {this.state.user.username} logged in{' '}
             <button onClick={this.logout}>logout</button>
           </div>
-          {this.state.blogs.map(blog => <Blog key={blog._id} blog={blog} />)}
+          {this.state.blogs
+            .sort(this.sortLikes)
+            .map(blog => (
+              <Blog
+                key={blog._id}
+                blog={blog}
+                handleLikeButton={this.handleLikeBlog}
+              />
+            ))}
         </div>
         <div>
           <h3>create new</h3>
