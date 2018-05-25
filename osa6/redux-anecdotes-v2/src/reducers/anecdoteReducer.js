@@ -1,11 +1,5 @@
-const anecdotesAtStart = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-];
+import { createNew } from '../services/anecdotes';
+import anecdoteService from '../services/anecdotes';
 
 const getId = () => (100000 * Math.random()).toFixed(0);
 
@@ -17,10 +11,40 @@ const asObject = anecdote => {
   };
 };
 
-const initialState = anecdotesAtStart.map(asObject);
-
-export const createContent = content => {
+export const voteAnecdote = voted => {
   return async dispatch => {
+    const content = await anecdoteService.registerVote(
+      voted.id,
+      voted.votes + 1
+    );
+    dispatch({
+      type: 'VOTE',
+      id: content.id,
+      voted: { ...voted, votes: content.votes }
+    });
+  };
+};
+
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll();
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes
+    });
+  };
+};
+
+export const anecdoteInitialization = data => {
+  return {
+    type: 'INIT_ANECDOTES',
+    data
+  };
+};
+
+export const createContent = anecdote => {
+  return async dispatch => {
+    const content = await createNew(anecdote);
     dispatch({
       type: 'CREATE',
       content
@@ -28,22 +52,22 @@ export const createContent = content => {
   };
 };
 
-export const voteAnecdote = id => {
-  return { type: 'VOTE', id };
-};
+const reducer = (store = [], action) => {
+  switch (action.type) {
+    case 'VOTE':
+      const olds = store.filter(a => a.id !== action.id);
 
-const reducer = (store = initialState, action) => {
-  if (action.type === 'VOTE') {
-    const old = store.filter(a => a.id !== action.id);
-    const voted = store.find(a => a.id === action.id);
+      return [...olds, action.voted];
 
-    return [...old, { ...voted, votes: voted.votes + 1 }];
+    case 'CREATE':
+      return [...store, action.content];
+
+    case 'INIT_ANECDOTES':
+      return action.data;
+
+    default:
+      return store;
   }
-  if (action.type === 'CREATE') {
-    return [...store, { content: action.content, id: getId(), votes: 0 }];
-  }
-
-  return store;
 };
 
 export default reducer;

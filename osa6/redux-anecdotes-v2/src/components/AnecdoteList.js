@@ -13,7 +13,7 @@ class AnecdoteList extends React.Component {
             <div>{anecdote.content}</div>
             <div>
               has {anecdote.votes}
-              <button onClick={() => this.props.voteAnecdote(anecdote.id)}>
+              <button onClick={() => this.props.voteAnecdote(anecdote)}>
                 vote
               </button>
             </div>
