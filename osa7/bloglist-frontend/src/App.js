@@ -6,6 +6,7 @@ import Togglable from './components/Togglable';
 import loginService from './services/login';
 
 import Users from './components/Users';
+import User from './components/User';
 import UserInfo from './components/UserInfo';
 import blogService from './services/blogs';
 import userService from './services/users';
@@ -90,6 +91,7 @@ class App extends React.Component {
     };
 
     const username = this.state.user ? this.state.user.username : '';
+    const userById = id => this.state.users.find(user => user.id == id);
 
     const routes = (
       <div>
@@ -125,6 +127,11 @@ class App extends React.Component {
               render={() => (
                 <Users user={this.state.user} users={this.state.users} />
               )}
+            />
+            <Route
+              exact
+              path="/users/:id"
+              render={({ match }) => <User user={userById(match.params.id)} />}
             />
           </div>
         </Router>

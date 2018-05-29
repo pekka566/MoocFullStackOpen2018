@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Users = props => {
   if (!props.user) {
@@ -13,12 +14,16 @@ const Users = props => {
         <table>
           <th />
           <th>blogs added</th>
-          {props.users.map(user => (
-            <tr>
-              <td>{user.username}</td>
-              <td>{user.blogs.length}</td>
-            </tr>
-          ))}
+          {props.users.map(user => {
+            return (
+              <tr>
+                <td>
+                  <Link to={`/users/${user.id}`}>{user.username}</Link>
+                </td>
+                <td>{user.blogs.length}</td>
+              </tr>
+            );
+          })}
         </table>
       </div>
     </div>
