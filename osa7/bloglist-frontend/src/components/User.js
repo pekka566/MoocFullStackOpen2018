@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Blog = ({ user }) => {
-  console.log(user);
   if (!user) return null;
 
   return (

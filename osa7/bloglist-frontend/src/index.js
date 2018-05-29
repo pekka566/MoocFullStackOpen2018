@@ -1,32 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+
+import blogs from './reducers/blogs';
+import users from './reducers/users';
+import notifications from './reducers/notifications';
 import App from './App';
-import Users from './components/Users';
-import Blog from './components/Blog';
 
-const blogById = id => this.state.notes.find(note => note.id === Number(id));
+const rootReducer = combineReducers({
+  blogs,
+  users,
+  notifications
+});
 
-const routes = (
-  <div>
-    <Router>
-      <div>
-        <div>
-          <Link to="/">home</Link> &nbsp;
-          <Link to="/users">users</Link> &nbsp;
-          <Link to="/users">users</Link> &nbsp;
-        </div>
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
-        <Route exact path="/" render={() => <App />} />
-        <Route exact path="/users" render={() => <Users />} />
-        <Route
-          exact
-          path="/notes/:id"
-          render={({ match }) => <Blog note={blogById(match.params.id)} />}
-        />
-      </div>
-    </Router>
-  </div>
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById('root')
 );
-
-ReactDOM.render(<App />, document.getElementById('root'));

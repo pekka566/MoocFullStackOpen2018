@@ -1,15 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import BlogsContainer from './components/BlogsContainer';
 import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
 import loginService from './services/login';
 
+import SimpleBlog from './components/SimpleBlog';
 import Users from './components/Users';
 import User from './components/User';
 import UserInfo from './components/UserInfo';
 import blogService from './services/blogs';
 import userService from './services/users';
+
+import { getBlogs } from './reducers/blogs';
+import { getUsers } from './reducers/users';
 
 class App extends React.Component {
   constructor(props) {
@@ -18,7 +24,6 @@ class App extends React.Component {
       user: null,
       username: '',
       password: '',
-      users: [],
       visible: false
     };
   }
@@ -30,13 +35,9 @@ class App extends React.Component {
       this.setState({ user });
       blogService.setToken(user.token);
     }
-    this.getUsers();
+    this.props.getUsers();
+    this.props.getBlogs();
   }
-
-  getUsers = async () => {
-    const users = await userService.getAll();
-    this.setState({ users });
-  };
 
   handleInputFieldChange = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -91,7 +92,8 @@ class App extends React.Component {
     };
 
     const username = this.state.user ? this.state.user.username : '';
-    const userById = id => this.state.users.find(user => user.id == id);
+    const userById = id => this.props.users.find(user => user.id == id);
+    const blogById = id => this.props.blogs.blogs.find(blog => blog.id == id);
 
     const routes = (
       <div>
@@ -123,9 +125,16 @@ class App extends React.Component {
             />
             <Route
               exact
+              path="/blogs/:id"
+              render={({ match }) => (
+                <SimpleBlog blog={blogById(match.params.id)} />
+              )}
+            />
+            <Route
+              exact
               path="/users"
               render={() => (
-                <Users user={this.state.user} users={this.state.users} />
+                <Users user={this.state.user} users={this.props.users} />
               )}
             />
             <Route
@@ -142,4 +151,19 @@ class App extends React.Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return { blogs: state.blogs, users: state.users };
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getBlogs: () => {
+      dispatch(getBlogs());
+    },
+    getUsers: () => {
+      dispatch(getUsers());
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

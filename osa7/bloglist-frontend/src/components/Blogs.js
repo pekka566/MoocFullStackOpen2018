@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Blog from './Blog';
 import CreateBlogForm from './CreateBlogForm';
 
@@ -11,6 +12,14 @@ const notifications = notification => (
     )}
   </div>
 );
+
+const blogStyle = {
+  paddingTop: 10,
+  paddingLeft: 2,
+  border: 'solid',
+  borderWidth: 1,
+  marginBottom: 5
+};
 
 const Blogs = props => {
   const sortLikes = (a, b) => {
@@ -25,16 +34,14 @@ const Blogs = props => {
 
   return (
     <div>
-      test
-      {props.blogs
-        .sort(sortLikes)
-        .map(blog => (
-          <Blog
-            key={blog._id}
-            blog={blog}
-            handleLikeButton={props.handleLikeButton}
-          />
-        ))}
+      {props.blogs.sort(sortLikes).map(blog => (
+        <div style={blogStyle}>
+          <Link to={`/blogs/${blog.id}`}>
+            {blog.title}
+            {blog.author}
+          </Link>
+        </div>
+      ))}
     </div>
   );
 };
