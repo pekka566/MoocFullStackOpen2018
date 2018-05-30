@@ -1,5 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
+import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
+
 import Blog from './Blog';
 import CreateBlogForm from './CreateBlogForm';
 
@@ -12,14 +15,6 @@ const notifications = notification => (
     )}
   </div>
 );
-
-const blogStyle = {
-  paddingTop: 10,
-  paddingLeft: 2,
-  border: 'solid',
-  borderWidth: 1,
-  marginBottom: 5
-};
 
 const Blogs = props => {
   const sortLikes = (a, b) => {
@@ -35,12 +30,17 @@ const Blogs = props => {
   return (
     <div>
       {props.blogs.sort(sortLikes).map(blog => (
-        <div style={blogStyle}>
-          <Link to={`/blogs/${blog.id}`}>
-            {blog.title}
-            {blog.author}
-          </Link>
-        </div>
+        <Card>
+          <CardBody>
+            <CardTitle>{blog.title}</CardTitle>
+            <CardText>
+              <Link to={`/blogs/${blog.id}`}>
+                {blog.title}
+                {blog.author}
+              </Link>
+            </CardText>
+          </CardBody>
+        </Card>
       ))}
     </div>
   );

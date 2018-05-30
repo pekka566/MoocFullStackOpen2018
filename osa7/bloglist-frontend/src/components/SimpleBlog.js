@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
+
 const SimpleBlogStyle = {
   paddingTop: 10,
   paddingLeft: 2,
@@ -9,12 +11,18 @@ const SimpleBlogStyle = {
 };
 
 const SimpleBlog = ({ blog }) => {
+  if (!blog) return null;
+
   return (
-    <div style={SimpleBlogStyle}>
-      <div>
-        {blog.title} {blog.author}
-      </div>
-    </div>
+    <Card>
+      <CardBody>
+        <CardTitle>{blog.title}</CardTitle>
+        <CardText>
+          {blog.title}
+          {blog.author}
+        </CardText>
+      </CardBody>
+    </Card>
   );
 };
 

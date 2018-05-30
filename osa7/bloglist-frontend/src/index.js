@@ -10,6 +10,8 @@ import users from './reducers/users';
 import notifications from './reducers/notifications';
 import App from './App';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const rootReducer = combineReducers({
   blogs,
   users,
