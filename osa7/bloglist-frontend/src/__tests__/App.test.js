@@ -1,9 +1,6 @@
 import React from 'react';
-import {
-  shallow
-} from 'enzyme';
+import { shallow } from 'enzyme';
 import SimpleBlog from '../components/SimpleBlog';
-
 
 it('renders content', () => {
   const simpleBlog = {
@@ -12,12 +9,7 @@ it('renders content', () => {
     likes: 67
   };
 
-  const SimpleBlogComponent = shallow( <
-    SimpleBlog blog = {
-      simpleBlog
-    }
-    />
-  );
+  const SimpleBlogComponent = shallow(<SimpleBlog blog={simpleBlog} />);
   const titleDiv = SimpleBlogComponent.find('.title');
   expect(titleDiv.text()).toContain(simpleBlog.title + ' ' + simpleBlog.author);
   const likesDiv = SimpleBlogComponent.find('.likes');
