@@ -10,6 +10,13 @@ export default function reducer(
         ...state,
         blogs: action.payload
       };
+    case 'GET_BLOG':
+      return {
+        ...state,
+        blogs: state.blogs.map(
+          blog => (blog._id === action.payload._id ? action.payload : blog)
+        )
+      };
     default:
       return state;
   }
@@ -21,6 +28,18 @@ export function getBlogs() {
     dispatch({
       type: 'GET_BLOGS',
       payload: blogs
+    });
+  };
+}
+
+export function comment(id, comment) {
+  return async dispatch => {
+    const updatedBlog = (await axios.post(`/api/blogs/${id}/comments`, {
+      comment
+    })).data;
+    dispatch({
+      type: 'GET_BLOG',
+      payload: updatedBlog
     });
   };
 }

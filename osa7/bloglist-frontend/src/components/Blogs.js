@@ -3,19 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
 
-import Blog from './Blog';
-import CreateBlogForm from './CreateBlogForm';
-
-const notifications = notification => (
-  <div>
-    {notification !== null && (
-      <p style={{ color: 'green', border: '3px solid green' }}>
-        {notification}
-      </p>
-    )}
-  </div>
-);
-
 const Blogs = props => {
   const sortLikes = (a, b) => {
     if (a.likes > b.likes) {
@@ -30,13 +17,12 @@ const Blogs = props => {
   return (
     <div>
       {props.blogs.sort(sortLikes).map(blog => (
-        <Card>
+        <Card key={blog.id}>
           <CardBody>
             <CardTitle>{blog.title}</CardTitle>
             <CardText>
               <Link to={`/blogs/${blog.id}`}>
-                {blog.title}
-                {blog.author}
+                {blog.title} {blog.author}
               </Link>
             </CardText>
           </CardBody>

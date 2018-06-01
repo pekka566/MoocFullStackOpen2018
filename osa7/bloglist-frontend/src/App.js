@@ -12,7 +12,6 @@ import Users from './components/Users';
 import User from './components/User';
 import UserInfo from './components/UserInfo';
 import blogService from './services/blogs';
-import userService from './services/users';
 
 import { getBlogs } from './reducers/blogs';
 import { getUsers } from './reducers/users';
