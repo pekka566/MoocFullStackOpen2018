@@ -32,11 +32,12 @@ export function getBlogs() {
   };
 }
 
-export function comment(id, comment) {
+export function newComment(id, comment) {
   return async dispatch => {
     const updatedBlog = (await axios.post(`/api/blogs/${id}/comments`, {
       comment
     })).data;
+
     dispatch({
       type: 'GET_BLOG',
       payload: updatedBlog

@@ -6,10 +6,15 @@ import {
   CardBody,
   CardTitle,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
+  Input,
+  Button,
+  Form
 } from 'reactstrap';
 
-const SimpleBlog = ({ blog }) => {
+const SimpleBlog = props => {
+  const { blog, handleChange, handleSubmit } = props;
+
   if (!blog) return null;
 
   return (
@@ -21,7 +26,22 @@ const SimpleBlog = ({ blog }) => {
         </CardText>
         <h5>comments</h5>
         <div>
-          {' '}
+          <Form
+            onSubmit={e => {
+              e.preventDefault();
+              handleSubmit(blog.id, this.input.value);
+            }}
+          >
+            <Input
+              name="newComment"
+              onChange={handleChange}
+              id="newComment"
+              innerRef={i => {
+                this.input = i;
+              }}
+            />
+            <Button type="submit">add</Button>
+          </Form>
           <ListGroup>
             {blog.comments.map((comment, i) => (
               <ListGroupItem key={i}>{comment}</ListGroupItem>

@@ -13,7 +13,7 @@ import User from './components/User';
 import UserInfo from './components/UserInfo';
 import blogService from './services/blogs';
 
-import { getBlogs } from './reducers/blogs';
+import { getBlogs, newComment } from './reducers/blogs';
 import { getUsers } from './reducers/users';
 
 class App extends React.Component {
@@ -68,6 +68,10 @@ class App extends React.Component {
     window.localStorage.removeItem('loggedUser');
     window.localStorage.clear();
     this.setState({ user: null });
+  };
+
+  addNewComment = async (id, comment) => {
+    this.props.comment(id, comment);
   };
 
   render() {
@@ -126,7 +130,11 @@ class App extends React.Component {
               exact
               path="/blogs/:id"
               render={({ match }) => (
-                <SimpleBlog blog={blogById(match.params.id)} />
+                <SimpleBlog
+                  blog={blogById(match.params.id)}
+                  handleChange={this.handleInputFieldChange}
+                  handleSubmit={this.addNewComment}
+                />
               )}
             />
             <Route
@@ -161,6 +169,9 @@ const mapDispatchToProps = dispatch => {
     },
     getUsers: () => {
       dispatch(getUsers());
+    },
+    comment: (id, comment) => {
+      dispatch(newComment(id, comment));
     }
   };
 };
