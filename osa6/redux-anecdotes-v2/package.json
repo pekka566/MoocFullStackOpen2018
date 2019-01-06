@@ -8,7 +8,7 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
-    "react-scripts": "1.0.17",
+    "react-scripts": "^1.1.5",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"
   },
@@ -20,7 +20,7 @@
     "server": "json-server -p3001 db.json"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
+    "eslint": "^5.12.0",
     "eslint-plugin-react": "^7.8.2"
   }
 }
